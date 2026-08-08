@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { th } from 'framer-motion/client';
 
 export class LoginPage {
   readonly page: Page;
@@ -11,6 +12,9 @@ export class LoginPage {
   readonly errorMessage: Locator;
   readonly googleLoginButton: Locator;
   readonly forgotPasswordLink: Locator;
+  readonly skipTwoStepVerificationButton:Locator;
+  readonly loginLink:Locator;
+  readonly signupButton:Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -18,9 +22,12 @@ export class LoginPage {
     this.continueButton = page.getByRole('button', { name: 'Continue' });
     this.passwordInput = page.getByLabel('Password');
     this.loginButton = page.getByRole('button', { name: 'Log in' });
-    this.errorMessage = page.getByTestId('error-message'); // adjust once you inspect actual DOM
+    this.loginLink = page.getByRole('link', { name: 'Log in' });
+    this.errorMessage = page.locator('[data-testid*="invalid-error-message-"]'); 
     this.googleLoginButton = page.getByRole('button', { name: /Continue with Google/i });
     this.forgotPasswordLink = page.getByRole('link', { name: 'Can\u2019t log in?' });
+    this.skipTwoStepVerificationButton=page.getByRole('button',{name:'Continue without two-step verification'})
+    this.signupButton = page.getByRole('button', {name: 'Sign up for Trello - it’s free!'});
   }
 
 async goto() {
@@ -74,4 +81,20 @@ async goto() {
     ]);
     return popup; // caller handles the Google-hosted login form in this popup page
   }
+
+   async skipTwoStepVerification() {
+    const isVisible = await this.skipTwoStepVerificationButton.isVisible({ timeout: 5000 }).catch(() => false);
+  if (isVisible) {
+    await this.skipTwoStepVerificationButton.click();
+  }
+}
+
+async isLoginLinkVisible():Promise<boolean>{
+  return await this.loginLink.isVisible();
+}
+
+async isSignUpButtonVisible():Promise<boolean>{
+  await this.signupButton.first().waitFor({ state: 'visible'});
+  return await this.signupButton.first().isVisible();
+}
 }

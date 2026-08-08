@@ -1,4 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 /**
  * Read environment variables from file.
@@ -30,6 +33,7 @@ export default defineConfig({
     navigationTimeout: 45000,
     actionTimeout: 15000,
     trace: 'on-first-retry',
+    screenshot:'only-on-failure'
   },
 
   /* Configure projects for major browsers */

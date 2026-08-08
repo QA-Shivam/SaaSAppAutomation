@@ -12,6 +12,8 @@ export class BoardPage {
   readonly closeBoardOption: Locator;
   readonly searchCardsInput: Locator;
   readonly filterButton: Locator;
+  readonly accountsTab:Locator;
+  readonly accountMenuLogout:Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -25,6 +27,8 @@ export class BoardPage {
     this.closeBoardOption = page.getByRole('button', { name: 'Close Board' });
     this.searchCardsInput = page.getByPlaceholder('Search cards');
     this.filterButton = page.getByRole('button', { name: 'Filter' });
+    this.accountsTab=page.locator("[aria-owns*='account-menu']");
+    this.accountMenuLogout=page.locator("button[data-testid*='account-menu-logout']");
   }
 
   async goto(boardId: string) {
@@ -99,5 +103,13 @@ export class BoardPage {
 
   async expectListCount(count: number) {
     await expect(this.page.locator('[data-testid="list"]')).toHaveCount(count);
+  }
+
+  async gotoAccounts(){
+    await this.accountsTab.click();
+  }
+
+  async logout(){
+    await this.accountMenuLogout.click();
   }
 }
