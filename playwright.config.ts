@@ -32,7 +32,7 @@ export default defineConfig({
     baseURL: 'https://trello.com',
     navigationTimeout: 45000,
     actionTimeout: 15000,
-    trace: 'on-first-retry',
+    trace: 'on',
     screenshot:'only-on-failure'
   },
 

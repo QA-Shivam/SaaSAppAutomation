@@ -4,6 +4,8 @@ const BASE = 'https://api.trello.com/1';
 const KEY = process.env.TRELLO_API_KEY!;
 const TOKEN = process.env.TRELLO_API_TOKEN!;
 
+
+
 export class TrelloApiClient {
   private ctx!: APIRequestContext;
 
@@ -22,7 +24,18 @@ export class TrelloApiClient {
   // ---------- BOARDS ----------
 
   async createBoard(name: string, extra: Record<string, string> = {}): Promise<APIResponse> {
-    return this.ctx.post(`${BASE}/boards/`, { params: this.authParams({ name, ...extra }) });
+    const params = this.authParams({ name, ...extra });
+    console.log(`[API REQUEST] POST ${BASE}/boards/`, { ...params, token: '***hidden***' });
+
+    const res = await this.ctx.post(`${BASE}/boards/`, { params });
+
+    const responseBody = await res.text(); 
+    console.log(`[API RESPONSE] Status: ${res.status()}`);
+
+    if (!res.ok()) {
+      throw new Error(`Trello API error (${res.status()}): ${responseBody}`);
+    }
+    return res;
   }
 
   async getBoard(id: string): Promise<APIResponse> {

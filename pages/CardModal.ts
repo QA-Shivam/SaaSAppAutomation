@@ -9,7 +9,6 @@ export class CardModal {
   readonly saveDescriptionButton: Locator;
   readonly commentInput: Locator;
   readonly saveCommentButton: Locator;
-  readonly commentList: Locator;
   readonly addLabelButton: Locator;
   readonly addMemberButton: Locator;
   readonly addChecklistButton: Locator;
@@ -21,6 +20,7 @@ export class CardModal {
   readonly archiveButton: Locator;
   readonly closeModalButton: Locator;
   readonly attachmentButton: Locator;
+  readonly writeCommentButton: Locator
 
   constructor(page: Page) {
     this.page = page;
@@ -29,9 +29,9 @@ export class CardModal {
     this.titleInput = this.modal.getByTestId('card-title-input');
     this.descriptionField = this.modal.getByPlaceholder('Add a more detailed description');
     this.saveDescriptionButton = this.modal.getByRole('button', { name: 'Save' });
-    this.commentInput = this.modal.getByPlaceholder('Write a comment');
+    this.writeCommentButton = this.modal.getByRole('button', { name: "Write a comment…" });
+    this.commentInput = this.modal.getByRole('textbox', { name: 'Write a comment…' });
     this.saveCommentButton = this.modal.getByRole('button', { name: 'Save', exact: true });
-    this.commentList = this.modal.getByTestId('comment-item');
     this.addLabelButton = this.modal.getByRole('button', { name: 'Labels' });
     this.addMemberButton = this.modal.getByRole('button', { name: 'Members' });
     this.addChecklistButton = this.modal.getByRole('button', { name: 'Checklist' });
@@ -57,12 +57,13 @@ export class CardModal {
   }
 
   async addComment(text: string) {
+    await this.writeCommentButton.click();
     await this.commentInput.fill(text);
     await this.saveCommentButton.click();
   }
 
   async expectCommentVisible(text: string) {
-    await expect(this.commentList.filter({ hasText: text })).toBeVisible();
+    await expect(this.page.getByRole('paragraph', { name: text, exact: true })).toBeVisible();
   }
 
   async addLabel(labelName: string) {

@@ -32,8 +32,9 @@ export const test = base.extend<MyTestFixtures, MyWorkerFixtures>({
     console.log(`[Worker ${workerInfo.workerIndex}] Logging in...`);
     await loginPage.goto();
     await loginPage.login(process.env.TRELLO_EMAIL!, process.env.TRELLO_PASSWORD!);
-    await loginPage.page.waitForURL('**/boards/**');
-    await loginPage.page.close(); // close the login tab, session stays alive on the context
+    await loginPage.skipTwoStepVerification();
+    await loginPage.page.waitForURL('**/boards');
+    await loginPage.page.close(); 
 
     await use(context);
     await context.close();

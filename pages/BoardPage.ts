@@ -1,4 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
+import { tr } from 'framer-motion/client';
 
 export class BoardPage {
   readonly page: Page;
@@ -12,23 +13,29 @@ export class BoardPage {
   readonly closeBoardOption: Locator;
   readonly searchCardsInput: Locator;
   readonly filterButton: Locator;
-  readonly accountsTab:Locator;
-  readonly accountMenuLogout:Locator;
+  readonly accountsTab: Locator;
+  readonly accountMenuLogout: Locator;
+  readonly addAnotherListButton: Locator;
+  readonly addcardButton: Locator;
+
 
   constructor(page: Page) {
     this.page = page;
 
-    this.boardTitleInput = page.getByTestId('board-name-input');
-    this.addListInput = page.getByPlaceholder('Enter list name');
-    this.addListButton = page.getByRole('button', { name: 'Add another list' });
+    this.boardTitleInput = page.locator('[aria-label="Board name"]');
+    this.addListInput = page.getByPlaceholder('Enter list name…');
+    this.addListButton = page.getByRole('button', { name: 'Add list' });
     this.visibilityDropdown = page.getByRole('button', { name: /Visibility/i });
     this.starIcon = page.getByTestId('board-star-icon');
     this.boardMenuButton = page.getByRole('button', { name: 'Show menu' });
     this.closeBoardOption = page.getByRole('button', { name: 'Close Board' });
     this.searchCardsInput = page.getByPlaceholder('Search cards');
     this.filterButton = page.getByRole('button', { name: 'Filter' });
-    this.accountsTab=page.locator("[aria-owns*='account-menu']");
-    this.accountMenuLogout=page.locator("button[data-testid*='account-menu-logout']");
+    this.accountsTab = page.locator("[aria-owns*='account-menu']");
+    this.accountMenuLogout = page.locator("button[data-testid*='account-menu-logout']");
+    this.addAnotherListButton = page.getByRole('button', { name: "Add another list" });
+    this.addcardButton = page.getByRole('button', { name: 'Add card' });
+
   }
 
   async goto(boardId: string) {
@@ -42,25 +49,34 @@ export class BoardPage {
   }
 
   async addList(name: string) {
+    await this.addAnotherListButton.click();
     await this.addListInput.fill(name);
-    await this.page.keyboard.press('Enter');
-    await this.page.keyboard.press('Escape'); // close the input after adding
+    await Promise.all([
+    this.page.waitForResponse(
+      (res) => res.url().includes('/1/lists') && res.request().method() === 'POST' && res.status() === 200
+    ),
+    this.addListButton.click(),
+  ]);
   }
 
   list(name: string): Locator {
-    return this.page.locator('[data-testid="list"]', { hasText: name });
+    return this.page.locator('[data-testid="list"]').filter({ hasText: name });
   }
 
   async addCard(listName: string, cardName: string) {
     const list = this.list(listName);
-    await list.getByText('Add a card').click();
-    await list.getByPlaceholder('Enter a title for this card').fill(cardName);
-    await this.page.keyboard.press('Enter');
-    await this.page.keyboard.press('Escape');
+    const addCardButton = list.getByRole('button', { name: 'Add a card' });
+    const cardTitleBox =  list.getByTestId('list-card-composer-textarea');
+    await addCardButton.waitFor({ state: 'visible' });
+    await addCardButton.click();
+    await cardTitleBox.waitFor({ state: 'visible' });
+    await cardTitleBox.fill(cardName);
+    const addCardBtn = list.getByTestId('list-card-composer-add-card-button');
+    await addCardBtn.click();
   }
 
   card(cardName: string): Locator {
-    return this.page.getByText(cardName, { exact: true });
+    return this.page.getByRole('link', { name: cardName, exact: true, });
   }
 
   async openCard(cardName: string) {
@@ -105,11 +121,11 @@ export class BoardPage {
     await expect(this.page.locator('[data-testid="list"]')).toHaveCount(count);
   }
 
-  async gotoAccounts(){
+  async gotoAccounts() {
     await this.accountsTab.click();
   }
 
-  async logout(){
+  async logout() {
     await this.accountMenuLogout.click();
   }
 }

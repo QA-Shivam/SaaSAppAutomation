@@ -26,7 +26,7 @@ export class LoginPage {
     this.errorMessage = page.locator('[data-testid*="invalid-error-message-"]'); 
     this.googleLoginButton = page.getByRole('button', { name: /Continue with Google/i });
     this.forgotPasswordLink = page.getByRole('link', { name: 'Can\u2019t log in?' });
-    this.skipTwoStepVerificationButton=page.getByRole('button',{name:'Continue without two-step verification'})
+    this.skipTwoStepVerificationButton=page.locator('[id=mfa-promote-dismiss]');
     this.signupButton = page.getByRole('button', {name: 'Sign up for Trello - it’s free!'});
   }
 
@@ -83,9 +83,11 @@ async goto() {
   }
 
    async skipTwoStepVerification() {
-    const isVisible = await this.skipTwoStepVerificationButton.isVisible({ timeout: 5000 }).catch(() => false);
-  if (isVisible) {
+  try {
+    await this.skipTwoStepVerificationButton.waitFor({ state: 'visible',timeout: 5000 });
     await this.skipTwoStepVerificationButton.click();
+  } catch {
+    console.log('Skip two-step verification button not found');
   }
 }
 
