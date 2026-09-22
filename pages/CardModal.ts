@@ -62,9 +62,8 @@ export class CardModal {
     await this.saveCommentButton.click();
   }
 
-  async expectCommentVisible(text: string, testInfo: TestInfo) {
+  async expectCommentVisible(text: string) {
     await expect(this.modal.getByRole('paragraph', { exact: true })).toBeVisible();
-    await testInfo.attach('Comment', {body: text, contentType: 'text/plain', });
   }
 
   async addLabel(labelName: string) {

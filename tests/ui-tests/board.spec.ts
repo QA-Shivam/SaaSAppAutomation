@@ -18,7 +18,7 @@ test.describe('verify complete board creation workflow with list, card, and comm
         }
     });
 
-    test(' create board, list, card, and comment @sanity', async ({ boardPage, cardModal, apiClient, }, testInfo) => {
+    test(' create board, list, card, and comment @sanity', async ({ boardPage, cardModal, apiClient, }) => {
         let listname="My To Do";
         let cardname="My Card";
         let comment="Task In Progress"
@@ -43,7 +43,7 @@ test.describe('verify complete board creation workflow with list, card, and comm
             await boardPage.goto(boardId!);
             await boardPage.openCard(cardname);
             await cardModal.addComment(comment);
-            await cardModal.expectCommentVisible(comment, testInfo);
+            await cardModal.expectCommentVisible(comment);
         });
     });
 

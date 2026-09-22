@@ -155,6 +155,21 @@ export class TrelloApiClient {
     return this.ctx.get(`${BASE}/members/${usernameOrId}/boards`, { params: this.authParams() });
   }
 
+  async deleteBoardsByName(name: string): Promise<void> {
+    const response = await this.getMemberBoards();
+    if (!response.ok()) {
+      throw new Error(`Trello API error (${response.status()}): ${await response.text()}`);
+    }
+
+    const boards = await response.json() as Array<{ id: string; name: string }>;
+    for (const board of boards.filter((item) => item.name === name)) {
+      const deleteResponse = await this.deleteBoard(board.id);
+      if (!deleteResponse.ok()) {
+        throw new Error(`Trello API error (${deleteResponse.status()}): ${await deleteResponse.text()}`);
+      }
+    }
+  }
+
   // ---------- WEBHOOKS ----------
 
   async createWebhook(callbackUrl: string, idModel: string, description = 'test webhook'): Promise<APIResponse> {
