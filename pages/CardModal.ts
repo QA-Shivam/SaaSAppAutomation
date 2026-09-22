@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { Page, Locator, TestInfo, expect } from '@playwright/test';
 
 export class CardModal {
   readonly page: Page;
@@ -62,8 +62,9 @@ export class CardModal {
     await this.saveCommentButton.click();
   }
 
-  async expectCommentVisible(text: string) {
-    await expect(this.page.getByRole('paragraph', { name: text, exact: true })).toBeVisible();
+  async expectCommentVisible(text: string, testInfo: TestInfo) {
+    await expect(this.modal.getByRole('paragraph', { exact: true })).toBeVisible();
+    await testInfo.attach('Comment', {body: text, contentType: 'text/plain', });
   }
 
   async addLabel(labelName: string) {

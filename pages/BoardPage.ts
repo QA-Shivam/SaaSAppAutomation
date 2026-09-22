@@ -1,5 +1,5 @@
 import { Page, Locator, expect } from '@playwright/test';
-import { tr } from 'framer-motion/client';
+import { th, tr } from 'framer-motion/client';
 
 export class BoardPage {
   readonly page: Page;
@@ -18,7 +18,6 @@ export class BoardPage {
   readonly addAnotherListButton: Locator;
   readonly addcardButton: Locator;
 
-
   constructor(page: Page) {
     this.page = page;
 
@@ -35,7 +34,6 @@ export class BoardPage {
     this.accountMenuLogout = page.locator("button[data-testid*='account-menu-logout']");
     this.addAnotherListButton = page.getByRole('button', { name: "Add another list" });
     this.addcardButton = page.getByRole('button', { name: 'Add card' });
-
   }
 
   async goto(boardId: string) {
